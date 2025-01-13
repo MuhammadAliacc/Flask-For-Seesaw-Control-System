@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ball and Beam Server</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            height: 90vh;
+        }
+        /* Top Window: Title */
+        header {
+            margin-top: auto;
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 2em;
+            border-bottom: 5px solid #388E3C;
+        }
+        /* Bottom Window: Instructions & Developer Info */
+        footer {
+            background-color: #f1f1f1;
+            padding: 20px;
+            text-align: center;
+            color: #555;
+            border-top: 5px solid #388E3C;
+        }
+        footer p {
+            font-size: 1em;
+            margin: 5px 0;
+        }
+        footer .developer-info {
+            font-style: italic;
+        }
+        /* Split screen into two sections: left and right */
+        .container {
+            display: flex;
+            width: 100%;
+            flex-grow: 1;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        /* Left window */
+        .left-window {
+            flex: 1;
+            background-color: #e2dede;
+            padding: 20px;
+            box-shadow: 4px 0px 10px rgba(0, 0, 0, 0.1);
+            font-size: 1.2em;
+        }
+        .left-window h1 {
+            font-size: 1.8em;
+            color: #4CAF50;
+            margin-left: 2%;
+        }
+        .left-window h2 {
+            font-size: 1em;
+            color: #0d057c;
+            margin-left: 4%;
+        }
+        /* Right window */
+        .right-window {
+            flex: 1;
+            background-color: #b5cfda;
+            padding: 20px;
+            box-shadow: -4px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        /* Title for the right window */
+        .right-window h1 {
+            font-size: 1.8em;
+            color: #4CAF50;
+            margin-left: 2;
+        }
+        /* Table styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        /* Input styling */
+        input[type="number"] {
+            width: 22%;
+            padding: 5px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-top: 10px;
+            align-items: center;
+        }
+        /* Button styling */
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease;
+            align-items: center;
+        }
+        button:hover {
+            background-color: #388E3C;
+        }
+        /* Error message styling */
+        .error {
+            color: red;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            .left-window, .right-window {
+                box-shadow: none;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Window: Title -->
+    <header>
+        Welcome to Ball and Beam Server
+    </header>
+
+    <!-- Main content container (Left and Right windows) -->
+    <div class="container">
+        <!-- Left Window: Instructions -->
+        <div class="left-window">
+            <h1>Instructions</h1>
+            <h2>   1. Connect hardware PC on the same network as this machine.</h2>
+            <h2>   2. Run the beam and camera Python files on the second PC.</h2>
+            <h2>   3. Navigate to the main page opened in the same browser to start.</h2>
+       </div>
+
+        <!-- Right Window: Input Buttons and Table -->
+        <div class="right-window">
+            <h1>Sensor Data and Controls</h1>
+
+            <!-- Input for custom angle -->
+            <div class="input-container">
+                <label for="angle-input">Set Angle:</label>
+                <input type="number" id="angle-input" name="angle-input" value="0.0" step="0.1" min="-7" max="7">
+            </div>
+
+            <button onclick="setAngle()">Set Angle</button>
+            <button onclick="fetchData()">Get Data</button>
+
+            <!-- Error message for out-of-range angle -->
+            <div id="error-message" class="error"></div>
+
+            <!-- Table to display data -->
+            <table id="sensor-table">
+                <thead>
+                    <tr>
+                        <th>Sensor</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Window: Instructions & Developer Info -->
+    <footer>
+        <p>For further instructions, please refer to the documentation or contact the support team.</p>
+        <p class="developer-info">Developed by: Muhammad Ali</p>
+    </footer>
+
+
+
+    
+
+    <script>
+        // Function to fetch and display sensor data
+        function fetchData() {
+            fetch('/get-data')
+                .then(response => response.json())
+                .then(data => {
+                    const sensorTable = document.getElementById('sensor-table').getElementsByTagName('tbody')[0];
+                    sensorTable.innerHTML = ''; // Clear the table
+
+                    Object.keys(data).forEach(sensor => {
+                        const row = sensorTable.insertRow();
+                        const cell1 = row.insertCell(0);
+                        const cell2 = row.insertCell(1);
+                        cell1.textContent = sensor;
+                        cell2.textContent = data[sensor];
+                    });
+                })
+                .catch(error => {
+                    alert('Error fetching data: ' + error);
+                });
+        }
+
+        // Function to set angle
+        function setAngle() {
+            const angleInput = document.getElementById('angle-input').value;
+            const errorMessage = document.getElementById('error-message');
+
+            if (parseFloat(angleInput) < -7 || parseFloat(angleInput) > 7) {
+                errorMessage.textContent = "Please enter a value between -7 and 7 for the angle.";
+                errorMessage.style.display = "block";
+                return;
+            } else {
+                errorMessage.textContent = "";
+                errorMessage.style.display = "none";
+            }
+
+            const data = { angle_set: parseFloat(angleInput) };
+            fetch('/set-angle', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                alert('Angle set successfully: ' + JSON.stringify(result));
+            })
+            .catch(error => {
+                alert('Error setting angle: ' + error);
+            });
+        }
+
+        // Automatically fetch data when page loads
+        window.addEventListener('load', () => {
+            fetchData();
+        });
+    </script>
+</body>
+</html>
