@@ -1,7 +1,7 @@
 # Flask-For-Seesaw-Control-System
 
 This repository is dedicated to managing the seesaw hardware system designed to balance a ball at a specified setpoint. It provides all the necessary files to set up a Flask server for seamless communication between the seesaw hardware and a control PC. The control PC runs Reinforcement Learning (RL) agents and PID controllers to achieve precise control over the system.
-![System Architecture](images/Dashboard.png "Dashboard")
+![System Architecture](Images/Dashboard.png "Dashboard")
 
 Key Features
 1. Flask Server for Communication
