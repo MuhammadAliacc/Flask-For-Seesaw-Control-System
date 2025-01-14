@@ -10,6 +10,6 @@ Displaying real-time data fetched from the server.
 Providing user instructions for seamless operation.
 Link to the RL Repository
 The RL agent and PID controllers used for controlling the ball position can be found here:
-RL-Agent to Control Ball Position on Seesaw
+[RL-Agent to Control Ball Position on Seesaw](https://github.com/MuhammadAliacc/RL-Agent-To-Control-BallPosition-On-Seesaw)
 
 Feel free to explore, contribute, or provide feedback to improve the project.
